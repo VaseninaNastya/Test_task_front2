@@ -100,52 +100,96 @@ document.body.prepend(main);
                 create('p',null,"Могут понадобиться:&nbsp"),
                 assocProduct_links
             ])
+
+            let unit = create('div', 'unit--select unit--active',[
+                create('p', 'ng-binding', 'За ' + this.productObj.unit )
+            ])
+            let unitAlt = create('div','unit--select',[
+                create('p','ng-binding','За ' + this.productObj.unitAlt)
+            ])
+            unit.addEventListener('click',()=>{
+                unit.classList.add('unit--active')
+                unitAlt.classList.remove('unit--active')
+                goldPrice.textContent = 
+                    (new Intl.NumberFormat('ru-RU').format(Math.round(parseFloat(this.productObj.priceGold) * 100)/100)).toString()+" ₽"
+                retailPrice.textContent = 
+                    (new Intl.NumberFormat('ru-RU').format(Math.round(parseFloat(this.productObj.priceRetail) * 100)/100)).toString()+" ₽"
+            })
+            unitAlt.addEventListener('click',()=>{
+                unitAlt.classList.add('unit--active')
+                unit.classList.remove('unit--active')
+                goldPrice.textContent = 
+                    (new Intl.NumberFormat('ru-RU').format(Math.round(parseFloat(this.productObj.priceGoldAlt) * 100)/100)).toString()+" ₽"
+                retailPrice.textContent = 
+                    (new Intl.NumberFormat('ru-RU').format(Math.round(parseFloat(this.productObj.priceRetailAlt) * 100)/100)).toString()+" ₽"
+
+            })
+        
+
+            if (this.productObj.unit==this.productObj.unitAlt){
+                unitAlt.style.display="none"  
+            }
+
             this.product_units = create('div','product_units',[
                 create('div', 'unit--wrapper',[
-                    create('div', 'unit--select unit--active',[
-                        create('p', 'ng-binding', 'За м. кв.' )
-                    ]),
-                    create('div','unit--select',[
-                        create('p','ng-binding','За упаковку')
-                    ])
+                    unit,
+                    unitAlt
                 ] )
             ])
 
-console.log(' this.productObj.priceGold', this.productObj.priceGold);
+            let goldPrice = create('span','goldPrice',(new Intl.NumberFormat('ru-RU').format(Math.round(parseFloat(this.productObj.priceGold) * 100)/100)).toString()+" ₽")
+            let retailPrice=create('span','retailPrice',  (new Intl.NumberFormat('ru-RU').format(Math.round(parseFloat(this.productObj.priceRetail) * 100)/100)).toString()+" ₽")
 this.product_price_club_card = create('p', 'product_price_club_card',[
     create('span','product_price_club_card_text', 'По карте<br>клуба'),
-    create('span','goldPrice',(new Intl.NumberFormat('ru-RU').format(Math.round(parseFloat(this.productObj.priceGoldAlt) * 100)/100)).toString()+" ₽")
+    goldPrice
 ])
 
 this.product_price_default = create('p', 'product_price_default',[
-    create('span','retailPrice',  (new Intl.NumberFormat('ru-RU').format(Math.round(parseFloat(this.productObj.priceRetailAlt) * 100)/100)).toString()+" ₽")
+    retailPrice
 ])
-
+          
 
             this.product_price_points = create('div', 'product_price_points', [
                 create('p',"ng-binding", `Можно купить за 231,75 балла`)
             ])
             this.list_unit_padd = create('div', 'list--unit-padd')
+           
+
             this.list_unit_desc = create('div', 'list--unit-desc', [
                 create('div', 'unit--info',[
                     create('div', 'unit--desc-i'),
                     create('div', "unit--desc-t",[
                         create('p', null,[
-                            create('span', "ng-binding", 'Продается упаковками:'),
-                            create('span', "unit--infoInn", '1 упак. = 2.47 м. кв.')
+                            create('span', "ng-binding", 'Продается '+this.productObj.unitFull+'ми:'),
+                            create('span', "unit--infoInn", this.productObj.unitRatio+ ' ' +this.productObj.unit + " = "+ this.productObj.unitRatioAlt+ ' ' + this.productObj.unitAlt)
                         ])
                     ])
                 ])
             ]
             )
+            if (this.productObj.unit==this.productObj.unitAlt){
+                this.list_unit_desc.style.display="none"  
+            }
 
-            
+            let counter = create('input', "product__count stepper-input", null, null, ['type',"text"],['value',"1"],['data-product-id',this.productObj.productId])
+            let up =  create('span', "stepper-arrow up",null,null,['data-product-id',this.productObj.productId]);
+            let down=create('span', "stepper-arrow down",null,null,['data-product-id',this.productObj.productId]);
+            up.addEventListener('click',(e)=>{
+                counter.value=parseInt(counter.value)+1;
+            })
+            down.addEventListener('click',(e)=>{
+                if (parseInt(counter.value)>1)
+                counter.value=parseInt(counter.value)-1;
+            })
+
+
+
 this.product__wrapper = create('div', 'product__wrapper', [
     create('div','product_count_wrapper',[
         create('div', 'stepper', [
-            create('input', "product__count stepper-input", null, null, ['type',"text"],['value',"1"],['data-product-id',this.productObj.productId]),
-            create('span', "stepper-arrow up",null,null,['data-product-id',this.productObj.productId]),
-            create('span', "stepper-arrow down",null,null,['data-product-id',this.productObj.productId])
+           counter ,
+           up,
+            down
         ])
     ]),
     create('span', "btn btn_cart", [
